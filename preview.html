@@ -30,6 +30,7 @@
 
       body {
         overflow: hidden;
+        background-color: black;
       }
 
       video {
@@ -42,7 +43,6 @@
         z-index: -1;
       }
 
-      /* Wrapper för animationen */
       .fade-wrapper {
         position: fixed;
         top: 50%;
@@ -99,7 +99,7 @@
         width: 250px;
         filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
         transition: transform 0.3s ease;
-        z-index: 1;
+        z-index: 999;
       }
 
       .hotel-logo:hover {
@@ -173,6 +173,99 @@
         transform: translateY(0);
         box-shadow: 0 2px 10px rgba(255, 99, 163, 0.3);
       }
+
+      /* End content styling */
+      .end-content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        background: rgba(0, 0, 0, 0.85);
+        padding: 2rem;
+      }
+
+      .end-content.visible {
+        visibility: visible;
+        animation: fade-in 3s forwards;
+      }
+
+      .end-logo {
+        position: absolute;
+        top: 10%;
+        right: 10%;
+        width: 250px;
+        filter: drop-shadow(0 0 20px rgba(255, 162, 200, 0.3));
+        animation: float 4s ease-in-out infinite;
+        z-index: 999;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      .end-text-container {
+        background: rgba(255, 162, 200, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 4rem;
+        max-width: 80%;
+        box-shadow: 0 0 40px rgba(255, 162, 200, 0.2);
+        border: 1px solid rgba(255, 162, 200, 0.3);
+      }
+
+      .end-title {
+        font-family: "Monoton", cursive;
+        font-size: clamp(3rem, 8vw, 6rem);
+        color: #ffa2c8;
+        margin-bottom: 2rem;
+        text-align: center;
+        text-shadow: 0 0 20px rgba(255, 162, 200, 0.5),
+          0 0 40px rgba(255, 162, 200, 0.3);
+      }
+
+      .end-subtitle {
+        font-family: "Roboto Slab", serif;
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        color: #ff63a3;
+        text-align: center;
+        line-height: 1.4;
+        font-weight: 300;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 10px rgba(255, 99, 163, 0.3);
+      }
+
+      .end-signature {
+        font-family: "Sacramento", cursive;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        color: #ffa2c8;
+        text-align: right;
+        margin-top: 2rem;
+        text-shadow: 0 0 15px rgba(255, 162, 200, 0.4);
+      }
+
+      @keyframes fade-in {
+        0% {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
   </head>
 
@@ -187,17 +280,16 @@
       allow="autoplay"
     >
     </iframe>
-    <video id="hotel-video" loop playsinline>
+
+    <video id="hotel-video" playsinline>
       <source src="snoop-video.mp4" type="video/mp4" />
       Din webbläsare stöder inte videouppspelning.
     </video>
 
-    <!-- Separat wrapper för loggan -->
     <div class="logo-wrapper">
       <img src="paw.svg" alt="Hotell Logga" class="hotel-logo" />
     </div>
 
-    <!-- Wrapper för centrerat innehåll -->
     <div class="fade-wrapper">
       <div class="preview-container">
         <h1>Smooth &nbsp;&nbsp;Mansion</h1>
@@ -205,15 +297,33 @@
         <button id="toggle-audio" class="control-button">Play</button>
       </div>
     </div>
+
+    <div id="end-content" class="end-content">
+      <img src="paw.svg" alt="Hotell Logga" class="end-logo" />
+      <div class="end-text-container">
+        <h2 class="end-title">Smooth Mansion</h2>
+        <p class="end-subtitle">
+          Step into the smoothest stay.<br />Opening January 10th, 2025.
+        </p>
+        <p class="end-signature">See you there – Uncle Snoop</p>
+      </div>
+    </div>
+
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const video = document.getElementById("hotel-video");
         const iframe = document.getElementById("soundcloud-player");
+        const endContent = document.getElementById("end-content");
         const toggleButton = document.getElementById("toggle-audio");
         let widget;
         let isPlaying = false;
 
         video.currentTime = 1;
+
+        video.addEventListener("ended", () => {
+          video.style.display = "none";
+          endContent.classList.add("visible");
+        });
 
         iframe.addEventListener("load", () => {
           widget = SC.Widget(iframe);
